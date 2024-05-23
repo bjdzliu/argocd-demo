@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: argocd-hello
+        app2: argocd-hello2
     spec:
       containers:
         - name: go-hello-http
