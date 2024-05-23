@@ -4,3 +4,10 @@ metadata:
   name: argocd-hello
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-hello
+  template:
+    metadata:
+      labels:
+        app: argocd-hello
