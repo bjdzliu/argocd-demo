@@ -80,7 +80,7 @@ metadata:
   name: ccs-be-reservation-test02
 spec:
   progressDeadlineSeconds: 600
-  replicas: 3
+  replicas: 4
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -94,7 +94,7 @@ spec:
   template:
     metadata:
       annotations:
-        date: '1716773705'
+        date: '1716773735'
         prometheus.io/path: /actuator/prometheus
         prometheus.io/port: '12043'
         prometheus.io/scrape: 'true'
