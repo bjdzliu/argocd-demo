@@ -1,0 +1,186 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ccs-be-reservation
+    argocd_app_name: ccs-be-reservation-test02
+    component: be
+    env_name: test02
+    env_type: dev
+    framework: springBoot
+    frameworkVersion: '2.0'
+    language: java
+    module: reservation
+    product: ccs
+    project: cariad-cn
+    softwareType: http-server
+  name: ccs-be-reservation-test02
+spec:
+  ports:
+  - name: http
+    port: 8090
+  selector:
+    app: ccs-be-reservation
+    env_name: test02
+  type: ClusterIP
+...
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/rewrite-target: $1
+    kubernetes.io/elb.port: '80'
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: ccs-be-reservation
+    argocd_app_name: ccs-be-reservation-test02
+    component: be
+    env_name: test02
+    env_type: dev
+    framework: springBoot
+    frameworkVersion: '2.0'
+    language: java
+    module: reservation
+    product: ccs
+    project: cariad-cn
+    softwareType: http-server
+  name: ccs-be-reservation-test02
+spec:
+  rules:
+  - host: hs-cariad-dev02.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: ccs-be-reservation-test02
+            port:
+              number: 8090
+        path: /cariad-cn-test02-ccs-be-reservation(.*)
+        pathType: Prefix
+...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ccs-be-reservation
+    argocd_app_name: ccs-be-reservation-test02
+    component: be
+    env_name: test02
+    env_type: dev
+    framework: springBoot
+    frameworkVersion: '2.0'
+    language: java
+    module: reservation
+    product: ccs
+    project: cariad-cn
+    softwareType: http-server
+  name: ccs-be-reservation-test02
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: ccs-be-reservation
+      env_name: test02
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        date: '1716773207'
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: '12043'
+        prometheus.io/scrape: 'true'
+        sidecar.istio.io/inject: 'false'
+      labels:
+        app: ccs-be-reservation
+        argocd_app_name: ccs-be-reservation-test02
+        component: be
+        env_name: test02
+        env_type: dev
+        framework: springBoot
+        frameworkVersion: '2.0'
+        language: java
+        module: reservation
+        product: ccs
+        project: cariad-cn
+        softwareType: http-server
+    spec:
+      containers:
+      - env:
+        - name: application_name
+          value: ccs-be-reservation
+        - name: JMX_PORT
+          value: '8082'
+        - name: DISABLE_METRICS
+          value: 'true'
+        - name: INIT_CMD
+          value: ./init.sh jacoco,althas
+        - name: POST_CMD
+          value: ./as.sh --attach pid
+        - name: JVM_OPTS
+          value: -Xms512m -Xmx512m
+        - name: GC_OPTS
+          value: -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+UseCMSInitiatingOccupancyOnly
+            -XX:+UseParNewGC -XX:+UseCMSInitiatingOccupancyOnly -XX:+CMSParallelRemarkEnabled
+        envFrom:
+        - configMapRef:
+            name: apollo-configprofile
+        - secretRef:
+            name: notifications-secret
+        image: nginx
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /actuator/liveness
+            port: 8090
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: app
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            httpHeaders:
+            - name: key
+              value: Content-Type
+            - name: value
+              value: application/json
+            path: /actuator/health
+            port: 8090
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 50m
+            memory: 256Mi
+          requests:
+            cpu: 5m
+            memory: 26Mi
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /data
+          name: catdir
+        - mountPath: /tmp
+          name: emptydir
+      imagePullSecrets:
+      - name: registry-secret
+      volumes:
+      - emptyDir: {}
+        name: catdir
+      - emptyDir: {}
+        name: emptydir
+...
