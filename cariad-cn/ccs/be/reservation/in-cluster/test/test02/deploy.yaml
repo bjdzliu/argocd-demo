@@ -30,7 +30,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    ingress.kubernetes.io/rewrite-target: $1
+    ingress.kubernetes.io/rewrite-target: /
     kubernetes.io/elb.port: '80'
     kubernetes.io/ingress.class: nginx
   labels:
@@ -57,7 +57,7 @@ spec:
             name: ccs-be-reservation-test02
             port:
               number: 8090
-        path: /cariad-cn-test02-ccs-be-reservation(.*)
+        path: cariad-cn-test02-ccs-be-reservation
         pathType: Prefix
 ...
 ---
@@ -94,7 +94,7 @@ spec:
   template:
     metadata:
       annotations:
-        date: '1716773735'
+        date: '1717395282'
         prometheus.io/path: /actuator/prometheus
         prometheus.io/port: '12043'
         prometheus.io/scrape: 'true'
@@ -130,6 +130,9 @@ spec:
         - name: GC_OPTS
           value: -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+UseCMSInitiatingOccupancyOnly
             -XX:+UseParNewGC -XX:+UseCMSInitiatingOccupancyOnly -XX:+CMSParallelRemarkEnabled
+        - name: SCC_ENV
+          value: '{''valueFrom'': {''configMapKeyRef'': {''key'': ''configprofile'',
+            ''name'': ''configprofile''}}}'
         envFrom:
         - configMapRef:
             name: apollo-configprofile
