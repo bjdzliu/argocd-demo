@@ -94,7 +94,7 @@ spec:
   template:
     metadata:
       annotations:
-        date: '1717395324'
+        date: '1717397564'
         prometheus.io/path: /actuator/prometheus
         prometheus.io/port: '12043'
         prometheus.io/scrape: 'true'
