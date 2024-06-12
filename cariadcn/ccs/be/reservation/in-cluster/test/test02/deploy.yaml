@@ -1,0 +1,274 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ccs-be-reservation
+    argocd_app_name: ccs-be-reservation-test02
+    component: be
+    env_name: test02
+    env_type: dev
+    framework: springBoot
+    frameworkVersion: '2.0'
+    language: java
+    module: reservation
+    product: ccs
+    project: cariadcn
+    softwareType: http-server
+  name: ccs-be-reservation-test02
+spec:
+  ports:
+  - name: http
+    port: 8090
+  selector:
+    app: ccs-be-reservation
+    env_name: test02
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/elb.port: '80'
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: ccs-be-reservation
+    argocd_app_name: ccs-be-reservation-test02
+    component: be
+    env_name: test02
+    env_type: dev
+    framework: springBoot
+    frameworkVersion: '2.0'
+    language: java
+    module: reservation
+    product: ccs
+    project: cariadcn
+    softwareType: http-server
+  name: ccs-be-reservation-test02
+spec:
+  rules:
+  - host: hs-cariad-dev02.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: ccs-be-reservation-test02
+            port:
+              number: 8090
+        path: cariadcn-test02-ccs-be-reservation
+        pathType: Prefix
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ccs-be-reservation
+    argocd_app_name: ccs-be-reservation-test02
+    component: be
+    env_name: test02
+    env_type: dev
+    framework: springBoot
+    frameworkVersion: '2.0'
+    language: java
+    module: reservation
+    product: ccs
+    project: cariadcn
+    softwareType: http-server
+  name: ccs-be-reservation-test02
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 4
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: ccs-be-reservation
+      env_name: test02
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        date: '1718183023'
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: '12043'
+        prometheus.io/scrape: 'true'
+        sidecar.istio.io/inject: 'false'
+      labels:
+        app: ccs-be-reservation
+        argocd_app_name: ccs-be-reservation-test02
+        component: be
+        env_name: test02
+        env_type: dev
+        framework: springBoot
+        frameworkVersion: '2.0'
+        language: java
+        module: reservation
+        product: ccs
+        project: cariadcn
+        softwareType: http-server
+    spec:
+      containers:
+      - env:
+        - name: application_name
+          value: ccs-be-reservation
+        - name: JMX_PORT
+          value: '8082'
+        - name: DISABLE_METRICS
+          value: 'true'
+        - name: INIT_CMD
+          value: ./init.sh jacoco,althas
+        - name: POST_CMD
+          value: ./as.sh --attach pid
+        - name: JVM_OPTS
+          value: -Xms512m -Xmx512m
+        - name: GC_OPTS
+          value: -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+UseCMSInitiatingOccupancyOnly
+            -XX:+UseParNewGC -XX:+UseCMSInitiatingOccupancyOnly -XX:+CMSParallelRemarkEnabled
+        - name: SCC_ENV
+          value: '{''valueFrom'': {''configMapKeyRef'': {''key'': ''configprofile'',
+            ''name'': ''configprofile''}}}'
+        envFrom:
+        - configMapRef:
+            name: apollo-configprofile
+        - secretRef:
+            name: notifications-secret
+        image: nginx
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /actuator/liveness
+            port: 8090
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: app
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            httpHeaders:
+            - name: key
+              value: Content-Type
+            - name: value
+              value: application/json
+            path: /actuator/health
+            port: 8090
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 50m
+            memory: 256Mi
+          requests:
+            cpu: 5m
+            memory: 26Mi
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /data
+          name: catdir
+        - mountPath: /tmp
+          name: emptydir
+      imagePullSecrets:
+      - name: registry-secret
+      volumes:
+      - emptyDir: {}
+        name: catdir
+      - emptyDir: {}
+        name: emptydir
+---
+api_version: v1
+binary_data:
+  indocker2.jks: !!binary |
+    L3UzKzdRQUFBQUlBQUFBQkFBQUFBUUFLYlhsclpYbGhiR2xoY3dBQUFZL3NTVnFUQUFBRkFqQ0NC
+    UDR3RGdZS0t3WUJCQUVxQWhFQkFRVUFCSUlFNnNOelNrRUxqQWVqc0Z3UVpHMlNjWlBGV25XdWhI
+    SFJKNmdTTkRBbXpiRHRwZVZ1OWxxWTVKYnhuQXBUOEpva2hiZzg4VmFZNDhkcXhQTkpPdWZtOUZW
+    UXlXbUhGbkUrZkFmbEIxMjYrTFduY2J2MmJRWVI5bDNYZTdoL0xKUkE2Z240MHhXc2M2R2ViTE5W
+    U1hsNEFaaDBCVHA4UHplQjJoM3hLVVRucnd0ODNYV3d6NjE3WXJCQXNEZzhJL2VSOHk1UHVFOTJt
+    Z0ZFNFBuVzEvUDBjTDhDNWsxNW5RWkVkYlJEdXRKQ2JkSWdZY2tNWVNReURyZGJaYWJuK3FPWXFL
+    S0xOSllhcHc3R3BLUVg5VGxjNVRoMjMwQk55Y3ZXU3k3bGhNUk9FTmordjJ1U3FkbzcxdFhIUDQx
+    RkROajV4UGVJTXF1MEdORjIxSDhXMEIrZ1FQaWZwNXdPOFl6c0pZcGsxeFV0a1g0VkNTSWhTaUIv
+    OEM5VytqR0ZHZCtjOW9sL2htRDgvUnFZK01yd2Z1d1BzUEJtMWwvTkJtQkNDOE96czB2dkdUSVdU
+    blp0UW95R3BYUWxCS2JkbzdMb3YzcjlJVWhWRUZCSll4MTVCQmh5MnBzRGdQUmhBd1ByYWI2WTI3
+    SWVsQ2lCZWlieEZFcmlSUzRYbE5HaTh5WmhmYzhWd3IxaW5PMHBRbDJ1OTFac3RYQUEvVmp0Umps
+    cXVOeWNTTmwxc3JCeXRCdytEcmdFQm1HMWIyMkNDejdPTzlOc3NNM0RQUmlqVzJjelhjSXpHYTZk
+    emFHWVkySm1KNVpPYTVoQkhtNmljZGx2T1Q2Z1o2aDBZRno0R1hiT0czMEJ3ekxGdEhrOHhYOHJx
+    ZnNCSU1mVXVMV01aSXBSUjBVVW9ONDl6RHArNVhZcUVhaXBkZE85RmxES1FoUmhSSnRubWhweVBm
+    UyttdmwzVkMrKzVIUzZ6R25FZ3pidkZIeUk3dlB4T042YnBuMGREZWNLazh1bm9RQU9lSUwyOTZm
+    UnE0NWJsc2pmdXJkT0dSTkhPWUhJUDlqSDNBMkg5SUkxRFhYbkxjYllzTnVIOWtTN3AvVmNNVXdQ
+    TjZLWXJmV1lTNjdFYjdXL1RBbGw0L3hQdVpsbGg0YmNqcGdvc1dGQ3BtT1dnMnk4QUxvejRhTkZ0
+    MndlU2NJemFFQ2xGa3Z0OHRpNmZTVG95QytaNW9PTzZORmhZK2Z5SjNEZWhEMjdrZVhpajJnUzhS
+    bTdWblhjdGdLS2lwMmxwbGQ1Y3NMU3BvVjZSMG1VQU9BQjdUS3lNSU5heWpzQ052SzlORVN5SkpS
+    cnFBbVd5aHhXVjUvY25IdnM5dlVHZEJjK0lXM2RabWRDdEswM3JtL3pUNFdhTjlwaWJvUndaL2Jw
+    YjA2RGlKdTczMys5OXlSZUl3TzBXWGExOXZNQzZ4aC95MlFlcHBzeGNBeG94cnZMNkUvWjFjSFUw
+    V2Qvc0lHZUo5TzFPZEMvcHgwK0o0RE4vNjNiaUFkWXBTUG5rYTJ2RWZLZ1prVTQ1SnBnd3FvWjQy
+    dWJ4WnZQYUJpQTFiVlF2Y0hCVlZqemJjWmdZRVYvNTF0V2lnV1dCWFlqTUxnamdQTUVyU2lQVUtL
+    MG1ZWm1RTjEraWJtMUtVa3BLVnRDcmlMZXFHU0ZydXIyYXhMQlptNjRNWTVpUTAwaUlmYVphV1U4
+    TTZGZjAvcGhnekNQb2wxYjVEQUcxdk8wS0d2SEpaaHZDdkttUVBwNmtuVHk2Mi8ybzJ2NmxVdWV1
+    VmFad2RCRE1UMlFEMUZudTUvUlE5bmV6MERBc1ZjRE51bVQySWFKOTJtWFJwWDhMUXQ1Y3hwL2Jv
+    UmNTRWVOeC9YOUdvVWFzd1Rmek9zU1E5eFMyOXYweDhJeTFjaHNKVFNHVmNDWFJiaFFuN3R3YVVy
+    OVg0L0JyVEJNMmgyUzNQcVVvT0YyTVNVRlBwaXgrMDF5dWdldTBXWUpnTVAvSGNwTGgxUXFPRC9C
+    ZjFuNlhDUXFqY3VSZGYxU3VVNFRGY3FnelAzUUFJS1JkbzViWkxvUkRqL3dyM0dOUGVodjRuTTkz
+    VVB1cEljckVZSmdSTVB3S3R4dU4veE0vSlNXT2h3WWJwQXg2dTAvWENxOFFNdVhUZEwwMjh2QWUz
+    SnZGcXB5ay9JeXBqb01VcEw0U2VMQUVsK25QeXpmMG5QVnQ1cU8wZC9YSlA5bkRlRzBjQmdBQUFB
+    QkFBVllMalV3T1FBQUEwVXdnZ05CTUlJQ0thQURBZ0VDQWdSeVJHWWpNQTBHQ1NxR1NJYjNEUUVC
+    Q3dVQU1GRXhDekFKQmdOVkJBWVRBbU51TVFzd0NRWURWUVFJRXdKaWFqRUxNQWtHQTFVRUJ4TUNZ
+    bW94RERBS0JnTlZCQW9UQTJSbGRqRU1NQW9HQTFVRUN4TURZMjl0TVF3d0NnWURWUVFERXdOc2FY
+    VXdIaGNOTWpRd05qQTJNRFkwTWpVNFdoY05NelF3TmpBME1EWTBNalU0V2pCUk1Rc3dDUVlEVlFR
+    R0V3SmpiakVMTUFrR0ExVUVDQk1DWW1veEN6QUpCZ05WQkFjVEFtSnFNUXd3Q2dZRFZRUUtFd05r
+    WlhZeEREQUtCZ05WQkFzVEEyTnZiVEVNTUFvR0ExVUVBeE1EYkdsMU1JSUJJakFOQmdrcWhraUc5
+    dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBd3VKYmN0SkNmSlZObTRvZXZzMTIzTE1sSmtOS3lL
+    d082QjNCUjVpN1B4SkFaUGh4Rnd2QWlBR1pjQ0ZNRlNNdjN2K2t1b3F3R1d0bmZkdVJDTm5BU1dq
+    ZUpSL0dxeFJpOGFoeVUrNjN3U0dKTXhYaFlUbGswckg2WnFPVks1c1VlOE5Mc1pUSjF5alVzb3JP
+    Y1c5cGZmR29SM3orRjFBZnYvNlRMZzBjaEdLSmhFTEx5RWgyemhvS3orMTlzcVBIbWRXUEowK3Av
+    VmNBRWgrc3Fpcm5kNE9GZTh4QUF2S1drNFhubm1sbSt2ejN2b1AvZnFZais5Si9Ma0ZlQ1dyM1d2
+    Z2Jqam93V2p3cm9rQVU3U2VYaE16anNuL2hzQXU2b3dFcDNBaVM5QTE1b0hPR1BpaFNEayt3UXBG
+    Y092VGFWdlI0RDNLRUJYOUdBcmxSOTlhalZ3SURBUUFCb3lFd0h6QWRCZ05WSFE0RUZnUVVpSUtJ
+    NVJFSjk1aWZnK054YXRMbGl5cXNFNDR3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUh5RVhsM1F2
+    eXIzSCtjYzB4bWR0T0tXa0RzVDdnY1YwTGVWOEloNXBVNVFldFNsRjUxOXZLTzdxRTVadnBwcEpm
+    TkdvZ0o2MlhONHRiSjNxUk9RL2tsVEJlZExUbWRvK1RwR0Iyc0Y5bU9pOTBrV01SMklUdVRyZ0xm
+    bGlHLzhjcEFodUJsd1hIL2h5WFg0WnhVb0c5SnhSaFl1Ujlmai9FcWRzMXZHb1pNMzFTcGkzWTli
+    dEE4aHM5TzNrQmEvQzlMc3VlS0ZDbkEvYld1MGY0R2d0cFN5YzErVC9SQU83ZnpMcEVaaEMzemow
+    YU54Z1hoSXFxOGxIazk2c3I1MnhOazY0M3orTkxrbXR1T3dHTjF1NHdia0VUZHBRQUpIK21PQUVW
+    Uzh2M3B2V2sxaGNBNFZRdUpkU21wcVIrRFNOTmtwYlp4dElSTDlrUFl2bWd2ODlrQnhnMU01TFcv
+    SzBHMUZVMk1zTVNDTzBtdU8yZz09
+data:
+  indocker1.crt: "-----BEGIN CERTIFICATE-----\r\nMIIJ6DCCCNCgAwIBAgIMVeasrtH4pDD5qTjFMA0GCSqGSIb3DQEBCwUAMFAxCzAJ\r\
+    \nBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSYwJAYDVQQDEx1H\r\nbG9iYWxTaWduIFJTQSBPViBTU0wgQ0EgMjAxODAeFw0yMzA3MDYwMTUxMDZaFw0y\r\
+    \nNDA4MDYwMTUxMDVaMIGAMQswCQYDVQQGEwJDTjEQMA4GA1UECBMHYmVpamluZzEQ\r\nMA4GA1UEBxMHYmVpamluZzE5MDcGA1UEChMwQmVpamluZyBCYWlkdSBOZXRjb20g\r\
+    \nU2NpZW5jZSBUZWNobm9sb2d5IENvLiwgTHRkMRIwEAYDVQQDEwliYWlkdS5jb20w\r\nggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC7BLuEdlgHtFqIVOBqVrzl\r\
+    \n1I0+Hrko4NcBjzgrQbJZffCsJ7QmJBQ4/kzqO0lR9+lbQPc/psjaDwJuJYtHkbgu\r\nngAhGR0YAPzeBP0meTld8pC8gJ2ofLKRiYnYQC/l0qfzXm1IK8UfCrHgjox2/7zR\r\
+    \nZwrSSdYJ7iYDAvPMzeqK1TGoLY8D/V785DrGiWeZTM6YbfqEDQ5Ti+ZjUsWbSqmr\r\noyI1mQ3uGf+bLfWkd/LsEID0q4K50X42Hw6fmxmg9cNX3Yi7zuGQnD9Lut06qUGz\r\
+    \n3YZNwsK36P83E8AEiUNEOBHmo5b3CSIhLyxODn7l2Fy7AERbr97ks7DwPLY4RUld\r\nAgMBAAGjggaPMIIGizAOBgNVHQ8BAf8EBAMCBaAwgY4GCCsGAQUFBwEBBIGBMH8w\r\
+    \nRAYIKwYBBQUHMAKGOGh0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5jb20vY2FjZXJ0\r\nL2dzcnNhb3Zzc2xjYTIwMTguY3J0MDcGCCsGAQUFBzABhitodHRwOi8vb2NzcC5n\r\
+    \nbG9iYWxzaWduLmNvbS9nc3JzYW92c3NsY2EyMDE4MFYGA1UdIARPME0wQQYJKwYB\r\nBAGgMgEUMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29t\r\
+    \nL3JlcG9zaXRvcnkvMAgGBmeBDAECAjAJBgNVHRMEAjAAMD8GA1UdHwQ4MDYwNKAy\r\noDCGLmh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3Nyc2FvdnNzbGNhMjAxOC5j\r\
+    \ncmwwggNhBgNVHREEggNYMIIDVIIJYmFpZHUuY29tggxiYWlmdWJhby5jb22CDHd3\r\ndy5iYWlkdS5jboIQd3d3LmJhaWR1LmNvbS5jboIPbWN0LnkubnVvbWkuY29tggth\r\
+    \ncG9sbG8uYXV0b4IGZHd6LmNuggsqLmJhaWR1LmNvbYIOKi5iYWlmdWJhby5jb22C\r\nESouYmFpZHVzdGF0aWMuY29tgg4qLmJkc3RhdGljLmNvbYILKi5iZGltZy5jb22C\r\
+    \nDCouaGFvMTIzLmNvbYILKi5udW9taS5jb22CDSouY2h1YW5rZS5jb22CDSoudHJ1\r\nc3Rnby5jb22CDyouYmNlLmJhaWR1LmNvbYIQKi5leXVuLmJhaWR1LmNvbYIPKi5t\r\
+    \nYXAuYmFpZHUuY29tgg8qLm1iZC5iYWlkdS5jb22CESouZmFueWkuYmFpZHUuY29t\r\ngg4qLmJhaWR1YmNlLmNvbYIMKi5taXBjZG4uY29tghAqLm5ld3MuYmFpZHUuY29t\r\
+    \ngg4qLmJhaWR1cGNzLmNvbYIMKi5haXBhZ2UuY29tggsqLmFpcGFnZS5jboINKi5i\r\nY2Vob3N0LmNvbYIQKi5zYWZlLmJhaWR1LmNvbYIOKi5pbS5iYWlkdS5jb22CEiou\r\
+    \nYmFpZHVjb250ZW50LmNvbYILKi5kbG5lbC5jb22CCyouZGxuZWwub3JnghIqLmR1\r\nZXJvcy5iYWlkdS5jb22CDiouc3UuYmFpZHUuY29tgggqLjkxLmNvbYISKi5oYW8x\r\
+    \nMjMuYmFpZHUuY29tgg0qLmFwb2xsby5hdXRvghIqLnh1ZXNodS5iYWlkdS5jb22C\r\nESouYmouYmFpZHViY2UuY29tghEqLmd6LmJhaWR1YmNlLmNvbYIOKi5zbWFydGFw\r\
+    \ncHMuY26CDSouYmR0anJjdi5jb22CDCouaGFvMjIyLmNvbYIMKi5oYW9rYW4uY29t\r\ngg8qLnBhZS5iYWlkdS5jb22CESoudmQuYmRzdGF0aWMuY29tghEqLmNsb3VkLmJh\r\
+    \naWR1LmNvbYISY2xpY2suaG0uYmFpZHUuY29tghBsb2cuaG0uYmFpZHUuY29tghBj\r\nbS5wb3MuYmFpZHUuY29tghB3bi5wb3MuYmFpZHUuY29tghR1cGRhdGUucGFuLmJh\r\
+    \naWR1LmNvbTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwHwYDVR0jBBgw\r\nFoAU+O9/8s14Z6jeb48kjYjxhwMCs+swHQYDVR0OBBYEFO1zq/kgvnoZn1kfsp/y\r\
+    \nPy8/kYQSMIIBfgYKKwYBBAHWeQIEAgSCAW4EggFqAWgAdgBIsONr2qZHNA/lagL6\r\nnTDrHFIBy1bdLIHZu7+rOdiEcwAAAYko5XABAAAEAwBHMEUCIQDtGvRfSswr/1ff\r\
+    \n5bjL+SRct34Ue6PaRsDYvGhpiYejgwIgX/aCg9Og5EZbVLo+ZsrU9s3IJusYzZYj\r\nASJszEzwZ1oAdwDuzdBk1dsazsVct520zROiModGfLzs3sNRSFlGcR+1mwAAAYko\r\
+    \n5XAdAAAEAwBIMEYCIQC9HcMYKn54HivSbhH0wuWtwTaHYtuIvJD8IhPF+zJ9/gIh\r\nAICMnoiGocc6FGIMIYmMd7p7JJSXMZCpFXSibCwzg1ItAHUA2ra/az+1tiKfm8K7\r\
+    \nXGvocJFxbLtRhIU0vaQ9MEjX+6sAAAGJKOVtVwAABAMARjBEAiBUbWpp6uCjWPkX\r\n1a3kdzajezONw5Uwdn7l+xypjE6bdwIgG2GK8pH+5UqZTTKxNyqCRoiJDX7rAXzx\r\
+    \nO22aIRkkBcAwDQYJKoZIhvcNAQELBQADggEBABlaZ1BDsax6k6hoGHKLQH6mdd6s\r\nIfzJQRYgS/OMC7lHRa74XXn2QzUmAZjwuYY+KQHx37Byta540t9htnhnisl3mt7g\r\
+    \n5EEvnB7lO3yXP0IvreNJf50rAoiQaSUDARS5tcsPWT0tlz0C1VGQaQyBECLaxlHv\r\nSAzST95h8mqHFaVtcY43AqKFDx4ZdaOALmoaogKML+y9PYEDP4rAoOa0DghXywAc\r\
+    \nircbjzhxmo3AcQw/vNS+Vp33GMGqvuTfGobiYm8jhjBUeC1HH7StBSlzJJgUoBnA\r\nAv2QkE5iXOhNMYnD6Iuec1k7mJHKR6UFW8Uej4U5Ds61JgqATp8IShFJE2M=\r\
+    \n-----END CERTIFICATE-----\r\n"
+immutable: null
+kind: ConfigMap
+metadata:
+  name: cariadcn-ccs-be-reservation-vomulemount
