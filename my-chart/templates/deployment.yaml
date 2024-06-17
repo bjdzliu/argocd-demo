@@ -4,6 +4,7 @@ metadata:
   name: argocd-hello
   labels:
     app: argocd-hello
+    app2: addtest
 spec:
   replicas: 1
   selector:
