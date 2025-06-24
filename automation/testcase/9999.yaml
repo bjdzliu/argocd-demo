@@ -1,0 +1,48 @@
+metadata:
+  version: v1
+header:
+  name: QG4 Evaluation
+  version: 1.0.0
+env:
+  FILE_DIRECTORY: "/tmp"
+autopilots:
+  check-file-availability:
+    run: |
+      if [ -f ${FILE_PATH} ]; then
+        echo '{"status": "RED", "reason": "File ${FILE_PATH} was not found!"}'
+        echo '{"result": {"criterion": "File ${FILE_PATH} must exist.", "fulfilled": false, "justification": "File ${FILE_PATH} was not found!"}}'
+      else
+        echo '{"status": "GREEN", "reason": "File ${FILE_PATH} was found."}'
+        echo '{"result": {"criterion": "File ${FILE_PATH} must exist.", "fulfilled": true, "justification": "File ${FILE_PATH} was found."}}'
+      fi
+    env:
+      FILE_PATH: ${{ env.FILE_DIRECTORY }}/${{ env.FILE_NAME }}
+chapters:
+  "1":
+    title: My first chapter
+    requirements:
+      "1":
+        title: My first requirement
+        text: The files "a.txt" and "b.txt" must exist.
+        checks:
+          check-file-availability:
+            title: Check if file A is available.
+            automation:
+                autopilot: check-file-availability
+                env:
+                    FILE_NAME: "a.txt"
+          check-file-availability2:
+            title: Check if file B is available.
+            automation:
+                autopilot: check-file-availability
+                env:
+                    FILE_NAME: "b.txt"
+      "2":
+        title: My second requirement
+        text: The file "c.txt" must exist.
+        checks:
+          check-file-availability:
+            title: Check if file C is available.
+            manual:
+              status: GREEN
+              reason: "File c.txt is not needed anymore."
