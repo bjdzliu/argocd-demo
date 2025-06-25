@@ -70,3 +70,7 @@ class JiraUtils:
                 }
         except Exception as e:
             print(f"Error searching for Test Execution by title: {e}")
+    def get_testcase_by_test_execution(self, test_execution_key: str) -> Optional[Dict]:
+        jql = f'issue in testExecutionTests("{test_execution_key}")'
+        issues = self.jira.search_issues(jql, maxResults=100)
+        return [issue.key for issue in issues]
