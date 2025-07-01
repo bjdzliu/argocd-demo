@@ -10,3 +10,11 @@ jobs:
     steps:
       - name: Print Hello World
         run: echo "Hello World"
+
+      - name: Print full client payload (JSON)
+        run: echo '${{ toJson(github.event.client_payload) }}'
+
+      - name: Print individual payload fields
+        run: |
+          echo "Custom Message: ${{ github.event.client_payload.custom_message }}"
+          echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
