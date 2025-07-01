@@ -1,0 +1,12 @@
+name: External Webhook Receiver
+
+on:
+  repository_dispatch:
+    types: [external_webhook]
+
+jobs:
+  hello_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Hello World
+        run: echo "Hello World"
