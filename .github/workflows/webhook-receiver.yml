@@ -24,7 +24,7 @@ jobs:
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
 
       - name: Run Python script to process data
-        run: python git_action_scripts/run1.py
+        run: python git_action_scripts/yaku_workflow_preparer
         env:
           JIRA_SERVER: ${{ vars.JIRA_SERVER }}
           JIRA_USERNAME: ${{ vars.JIRA_USERNAME }}
