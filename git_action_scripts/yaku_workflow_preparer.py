@@ -8,6 +8,8 @@ import shutil
 2. Construct scripts and configuration 
 3. Send a request of starting workflow to YAKU
 """
+current_script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(current_script_path))
 
 def get_test_list()->list:
     server=os.environ.get('JIRA_SERVER')
@@ -23,7 +25,8 @@ def get_test_list()->list:
     return ['ADTOPS-1163','ADTOPS-1619']
     
 def construct_files(test_list):
-    source_dir = os.path.join('automation', 'utils') 
+
+    source_dir = os.path.join(project_root,'automation', 'utils') 
     print(f"Source directory: {source_dir}")
     for target_dir_name in test_list:
         target_dir_path = os.path.join(source_dir, target_dir_name)
@@ -42,8 +45,6 @@ def construct_files(test_list):
                     print(f"Error copying '{source_file_path}' to '{destination_file_path}': {e}")
 
 if __name__ == '__main__':
-    current_script_path = os.path.abspath(__file__)
-    project_root = os.path.dirname(os.path.dirname(current_script_path))
     if project_root not in sys.path:
         sys.path.insert(0, project_root) 
     from automation.utils.jira_utils import JiraUtils
