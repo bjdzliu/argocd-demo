@@ -8,6 +8,9 @@ jobs:
   hello_job:
     runs-on: linux-runner
     steps:
+      - name: Checkout # 
+        uses: actions/checkout@v4
+        
       - name: Print Hello World
         run: echo "Hello World"
 
