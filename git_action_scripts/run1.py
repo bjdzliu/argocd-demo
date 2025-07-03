@@ -6,17 +6,17 @@ import requests
 
 
 if __name__ == '__main__':
-    jira_utils = JiraUtils(
-        server=os.environ.get('JIRA_SERVER'),
-        username=os.environ.get('JIRA_USERNAME'),
-        api_token=os.environ.get('JIRA_API_TOKEN')
-    )
     current_script_path = os.path.abspath(__file__)
     project_root = os.path.dirname(os.path.dirname(current_script_path))
     if project_root not in sys.path:
         sys.path.insert(0, project_root) # 将项目根目录添加到搜索路径的最前面
 
     from utils.jira_utils import JiraUtils
+    jira_utils = JiraUtils(
+        server=os.environ.get('JIRA_SERVER'),
+        username=os.environ.get('JIRA_USERNAME'),
+        api_token=os.environ.get('JIRA_API_TOKEN')
+    )
 
 
     print("jira_util imported successfully!")
