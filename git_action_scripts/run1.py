@@ -3,8 +3,6 @@ import sys
 import json
 import requests
 
-
-
 if __name__ == '__main__':
     current_script_path = os.path.abspath(__file__)
     project_root = os.path.dirname(os.path.dirname(current_script_path))
