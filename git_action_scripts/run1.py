@@ -11,6 +11,8 @@ if __name__ == '__main__':
 
     from automation.utils.jira_utils import JiraUtils
     server=os.environ.get('JIRA_SERVER')
+    TEST_EXECUTION_KEY=os.environ.get('TEST_EXECUTION_KEY')
+    
     print("jira server is ",server)
     jira_utils = JiraUtils(
         server=os.environ.get('JIRA_SERVER'),
@@ -18,6 +20,8 @@ if __name__ == '__main__':
         api_token=os.environ.get('JIRA_API_TOKEN')
     )
     print("jira_util imported successfully!")
+    result=jira_utils.get_test_execution_by_key(TEST_EXECUTION_KEY)
+    print(result)
     # issue_key = os.environ.get('ISSUE_KEY')
     # issue = jira_utils.get_test_execution_by_key(issue_key)
     # if issue:
