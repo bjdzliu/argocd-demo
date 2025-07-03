@@ -3,7 +3,7 @@ import sys
 import json
 import requests
 
-from utils.jira_utils import JiraUtils
+
 
 if __name__ == '__main__':
     jira_utils = JiraUtils(
@@ -11,7 +11,15 @@ if __name__ == '__main__':
         username=os.environ.get('JIRA_USERNAME'),
         api_token=os.environ.get('JIRA_API_TOKEN')
     )
-    print("hello world")
+    current_script_path = os.path.abspath(__file__)
+    project_root = os.path.dirname(os.path.dirname(current_script_path))
+    if project_root not in sys.path:
+        sys.path.insert(0, project_root) # 将项目根目录添加到搜索路径的最前面
+
+    from utils.jira_utils import JiraUtils
+
+
+    print("jira_util imported successfully!")
     # issue_key = os.environ.get('ISSUE_KEY')
     # issue = jira_utils.get_test_execution_by_key(issue_key)
     # if issue:
