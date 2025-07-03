@@ -3,13 +3,11 @@ name: External Webhook Receiver
 on:
   repository_dispatch:
     types: [external_webhook]
-env:
-  # Setting an environment variable with the value of a configuration variable
-  env_var: ${{ vars.JIRA_Cloud }}
 
 jobs:
   hello_job:
     runs-on: linux-runner
+    environment: JIRA_Cloud
     steps:
       - name: Checkout # 
         uses: actions/checkout@v4
