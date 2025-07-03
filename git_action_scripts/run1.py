@@ -11,6 +11,8 @@ if __name__ == '__main__':
 
     from automation.utils.jira_utils import JiraUtils
     server=os.environ.get('JIRA_SERVER')
+    t=os.environ.get('JIRA_API_TOKEN')
+    print('token is:',t)
     TEST_EXECUTION_KEY=os.environ.get('TEST_EXECUTION_KEY')
     
     print("jira server is ",server)
