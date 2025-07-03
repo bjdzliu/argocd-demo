@@ -28,7 +28,7 @@ jobs:
         env:
           JIRA_SERVER: ${{ vars.JIRA_SERVER }}
           JIRA_USERNAME: ${{ vars.JIRA_USERNAME }}
-          JIRA_API_TOKEN: ${{ vars.JIRA_API_TOKEN }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           TEST_EXECUTION_KEY: ${{ github.event.client_payload.issue_key }}
 
 
