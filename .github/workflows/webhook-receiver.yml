@@ -12,9 +12,6 @@ jobs:
       - name: Checkout # 
         uses: actions/checkout@v4
 
-      - name: Print Hello World
-        run: echo "Hello World"
-
       - name: Print full client payload (JSON)
         run: echo '${{ toJson(github.event.client_payload) }}'
 
@@ -24,7 +21,7 @@ jobs:
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
 
       - name: Run Python script to process data
-        run: python git_action_scripts/yaku_workflow_preparer
+        run: python git_action_scripts/yaku_workflow_preparer.py
         env:
           JIRA_SERVER: ${{ vars.JIRA_SERVER }}
           JIRA_USERNAME: ${{ vars.JIRA_USERNAME }}
