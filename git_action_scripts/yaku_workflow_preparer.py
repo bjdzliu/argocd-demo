@@ -3,6 +3,10 @@ import sys
 import json
 import requests
 import shutil
+
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(current_dir)
 from yaku_utils import YakuClient
 
 """
@@ -20,7 +24,6 @@ print(project_root)
 def get_test_list()->list:
     server=os.environ.get('JIRA_SERVER')
     t=os.environ.get('JIRA_API_TOKEN')
-    print('token is:',t)
     TEST_EXECUTION_KEY=os.environ.get('TEST_EXECUTION_KEY')
     # jira_utils = JiraUtils(
     #     server=os.environ.get('JIRA_SERVER'),
