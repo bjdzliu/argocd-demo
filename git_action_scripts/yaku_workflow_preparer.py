@@ -27,7 +27,7 @@ def get_test_list()->list:
     #     api_token=os.environ.get('JIRA_API_TOKEN')
     # )
     #result=jira_utils.get_test_execution_by_key(TEST_EXECUTION_KEY)
-    return ['ADTOPS-1163','ADTOPS-1619']
+    return ['DZNIU-2','DZNIU-3']
     
 def construct_files(test_list):
     for target_dir_name in test_list:
