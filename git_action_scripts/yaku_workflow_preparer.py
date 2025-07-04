@@ -3,10 +3,6 @@ import sys
 import json
 import requests
 import shutil
-
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(current_dir)
 from yaku_utils import YakuClient
 
 """
