@@ -5,7 +5,7 @@ on:
     types: [external_webhook]
 
 jobs:
-  hello_job:
+  Workflow_Trigger:
     runs-on: linux-runner
     environment: JIRA_Cloud
     steps:
