@@ -33,19 +33,39 @@ def construct_files(test_list):
     for target_dir_name in test_list:
         target_dir_path = os.path.join(testcase_dir, target_dir_name)
         print(f"Target directory for '{target_dir_name}': {target_dir_path}")
-        print(f"Ensured target directory '{target_dir_path}' exists.")
-        for filename in os.listdir(source_dir):
-            if filename.endswith('.py') or filename.endswith('.json'):
-                source_file_path = os.path.join(source_dir, filename)
-                destination_file_path = os.path.join(target_dir_path, filename)
-                try:
-                    shutil.copy2(source_file_path, destination_file_path)
-                    print(f"Copied '{source_file_path}' to '{destination_file_path}'")
-                except FileNotFoundError:
-                    print(f"Error: Source file '{source_file_path}' not found.")
-                except Exception as e:
-                    print(f"Error copying '{source_file_path}' to '{destination_file_path}': {e}")
+        #print(f"Ensured target directory '{target_dir_path}' exists.")
+        # for filename in os.listdir(source_dir):
+        #     if filename.endswith('.py') or filename.endswith('.json'):
+        #         source_file_path = os.path.join(source_dir, filename)
+        #         destination_file_path = os.path.join(target_dir_path, filename)
+        #         try:
+        #             shutil.copy2(source_file_path, destination_file_path)
+        #             print(f"Copied '{source_file_path}' to '{destination_file_path}'")
+        #         except FileNotFoundError:
+        #             print(f"Error: Source file '{source_file_path}' not found.")
+        #         except Exception as e:
+        #             print(f"Error copying '{source_file_path}' to '{destination_file_path}': {e}")
 
+        for root, dirs, files in os.walk(source_dir):
+            # Determine target directory for current subdirectory
+            # if rel_path == '.':
+            #     current_target_dir = target_dir_path
+            # else:
+            #     current_target_dir = os.path.join(target_dir_path, rel_path)
+            #     os.makedirs(current_target_dir, exist_ok=True)
+            
+            # Copy files
+            for filename in files:
+                if filename.endswith('.py') or filename.endswith('.json'):
+                    source_file_path = os.path.join(root, filename)
+                    destination_file_path = os.path.join(target_dir_path, filename)   
+                    try:
+                        shutil.copy2(source_file_path, destination_file_path)
+                        print(f"Copied '{source_file_path}' to '{destination_file_path}'")
+                    except FileNotFoundError:
+                        print(f"Error: Source file '{source_file_path}' not found.")
+                    except Exception as e:
+                        print(f"Error copying '{source_file_path}' to '{destination_file_path}': {e}")
 
 def get_files_in_directory(directory_path):
     """
@@ -88,7 +108,7 @@ if __name__ == '__main__':
     test_list=get_test_list()
     if len(test_list)>0:
         construct_files(test_list)
-        execute_tests(test_list)
+        #execute_tests(test_list)
     
     # issue_key = os.environ.get('ISSUE_KEY')
     # issue = jira_utils.get_test_execution_by_key(issue_key)
