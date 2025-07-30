@@ -17,6 +17,13 @@ automation_dir = os.path.join(project_root,'automation')
 source_dir = os.path.join(automation_dir,'utils')
 testcase_dir= os.path.join(automation_dir,'testcase')
 TEST_EXECUTION_KEY=os.environ.get('TEST_EXECUTION_KEY')
+TEST_EXECUTION_SUMMARY=os.environ.get('TEST_EXECUTION_SUMMARY')
+
+def get_vw_version(summary: str) -> tuple:
+    version=summary.split(' ')[-2]
+    vw=summary.split(' ')[-3]
+    print(f"VW Name: {vw}, Version: {version}")
+    return vw, version
 
 def get_test_list()->list:
     server=os.environ.get('JIRA_SERVER')
@@ -29,7 +36,12 @@ def get_test_list()->list:
     #result=jira_utils.get_test_execution_by_key(TEST_EXECUTION_KEY)
     return ['DZNIU-2','DZNIU-3']
     
-def construct_files(test_list):
+def construct_files(test_list,vw_name, vw_version):
+    replacements = {
+    "REPLACE_WITH_SW_NAME": vw_name,
+    "REPLACE_WITH_SW_VERSION": vw_version,
+    "REPLACE_WITH_XRAY_TEST_EXEC_KEY": TEST_EXECUTION_KEY
+    }
     for target_dir_name in test_list:
         target_dir_path = os.path.join(testcase_dir, target_dir_name)
         print(f"#### Target directory for '{target_dir_name}': {target_dir_path}")
@@ -37,23 +49,11 @@ def construct_files(test_list):
         qg_config_path = os.path.join(target_dir_path, 'qg-config.yaml')
         with open(qg_config_path, 'r') as file:
             file_content = file.read()
-        updated_content = file_content.replace("REPLACE_WITH_XRAY_TEST_EXEC_KEY", TEST_EXECUTION_KEY)
+        for old, new in replacements.items():
+            file_content = file_content.replace(old, new)
         with open(qg_config_path, 'w') as file:
-            file.write(updated_content)
+            file.write(file_content)
         print(f"Successfully replaced 'REPLACE_WITH_XRAY_TEST_EXEC_KEY' with '{TEST_EXECUTION_KEY}' in {qg_config_path}")
-
-        #print(f"Ensured target directory '{target_dir_path}' exists.")
-        # for filename in os.listdir(source_dir):
-        #     if filename.endswith('.py') or filename.endswith('.json'):
-        #         source_file_path = os.path.join(source_dir, filename)
-        #         destination_file_path = os.path.join(target_dir_path, filename)
-        #         try:
-        #             shutil.copy2(source_file_path, destination_file_path)
-        #             print(f"Copied '{source_file_path}' to '{destination_file_path}'")
-        #         except FileNotFoundError:
-        #             print(f"Error: Source file '{source_file_path}' not found.")
-        #         except Exception as e:
-        #             print(f"Error copying '{source_file_path}' to '{destination_file_path}': {e}")
 
         for root, dirs, files in os.walk(source_dir):    
             # Copy files
@@ -109,7 +109,8 @@ if __name__ == '__main__':
     print("jira_util imported successfully!")
     test_list=get_test_list()
     if len(test_list)>0:
-        construct_files(test_list)
+        vw_name, vw_version = get_vw_version(TEST_EXECUTION_SUMMARY)
+        construct_files(test_list,vw_name, vw_version)
         #execute_tests(test_list)
     
     # issue_key = os.environ.get('ISSUE_KEY')

@@ -19,6 +19,7 @@ jobs:
         run: |
           echo "Custom Message: ${{ github.event.client_payload.custom_message }}"
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
+          echo "Summary is: ${{ github.event.client_payload.summary }}"
 
       - name: Run Python script to process data
         run: |
@@ -28,6 +29,7 @@ jobs:
           JIRA_USERNAME: ${{ vars.JIRA_USERNAME }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           TEST_EXECUTION_KEY: ${{ github.event.client_payload.issue_key }}
+          TEST_EXECUTION_SUMMARY: ${{ github.event.client_payload.summary }}
           YAKU_API_TOKEN: ${{ secrets.YAKU_API_TOKEN }}
 
 
