@@ -5,6 +5,8 @@ header:
   version: 1.0.0
 env:
   FILE_DIRECTORY: "/tmp"
+  XRAY_TEST_EXEC_KEY: "REPLACE_WITH_XRAY_TEST_EXEC_KEY"
+  TEST_CASE_KEY: "DZNIU-3"
 autopilots:
   check-file-availability:
     run: |

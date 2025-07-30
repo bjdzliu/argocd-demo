@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import requests
+import yaml
 import shutil
 from yaku_utils import YakuClient
 
@@ -15,12 +16,11 @@ project_root = os.path.dirname(os.path.dirname(current_script_path))
 automation_dir = os.path.join(project_root,'automation') 
 source_dir = os.path.join(automation_dir,'utils')
 testcase_dir= os.path.join(automation_dir,'testcase')
-print(project_root)
+TEST_EXECUTION_KEY=os.environ.get('TEST_EXECUTION_KEY')
 
 def get_test_list()->list:
     server=os.environ.get('JIRA_SERVER')
     t=os.environ.get('JIRA_API_TOKEN')
-    TEST_EXECUTION_KEY=os.environ.get('TEST_EXECUTION_KEY')
     # jira_utils = JiraUtils(
     #     server=os.environ.get('JIRA_SERVER'),
     #     username=os.environ.get('JIRA_USERNAME'),
@@ -32,7 +32,16 @@ def get_test_list()->list:
 def construct_files(test_list):
     for target_dir_name in test_list:
         target_dir_path = os.path.join(testcase_dir, target_dir_name)
-        print(f"Target directory for '{target_dir_name}': {target_dir_path}")
+        print(f"#### Target directory for '{target_dir_name}': {target_dir_path}")
+        #update a qg-config.yaml , replace REPLACE_WITH_XRAY_TEST_EXEC_KEY in yaml file
+        qg_config_path = os.path.join(target_dir_path, 'qg-config.yaml')
+        with open(qg_config_path, 'r') as file:
+            file_content = file.read()
+        updated_content = file_content.replace("REPLACE_WITH_XRAY_TEST_EXEC_KEY", TEST_EXECUTION_KEY)
+        with open(qg_config_path, 'w') as file:
+            file.write(updated_content)
+        print(f"Successfully replaced 'REPLACE_WITH_XRAY_TEST_EXEC_KEY' with '{TEST_EXECUTION_KEY}' in {qg_config_path}")
+
         #print(f"Ensured target directory '{target_dir_path}' exists.")
         # for filename in os.listdir(source_dir):
         #     if filename.endswith('.py') or filename.endswith('.json'):
@@ -46,14 +55,7 @@ def construct_files(test_list):
         #         except Exception as e:
         #             print(f"Error copying '{source_file_path}' to '{destination_file_path}': {e}")
 
-        for root, dirs, files in os.walk(source_dir):
-            # Determine target directory for current subdirectory
-            # if rel_path == '.':
-            #     current_target_dir = target_dir_path
-            # else:
-            #     current_target_dir = os.path.join(target_dir_path, rel_path)
-            #     os.makedirs(current_target_dir, exist_ok=True)
-            
+        for root, dirs, files in os.walk(source_dir):    
             # Copy files
             for filename in files:
                 if filename.endswith('.py') or filename.endswith('.json'):
