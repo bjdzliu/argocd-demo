@@ -2,7 +2,7 @@ name: External Webhook Receiver
 
 on:
   repository_dispatch:
-    types: [external_webhook]
+    types: [sdt_auto_external_webhook]
 
 jobs:
   Workflow_Trigger:
