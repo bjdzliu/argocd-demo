@@ -18,7 +18,9 @@ jobs:
       - name: Print individual payload fields
         run: |
           echo "Custom Message: ${{ github.event.client_payload.custom_message }}"
-          echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
+          echo "request_id: ${{ github.event.client_payload.request_id }}"
+          echo "app_name: ${{ github.event.client_payload.app_name }}"
+          echo "app_version: ${{ github.event.client_payload.app_version }}"
           echo "Summary is: ${{ github.event.client_payload.summary }}"
 
       - name: Run Python script to process data
@@ -30,6 +32,9 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           TEST_EXECUTION_KEY: ${{ github.event.client_payload.issue_key }}
           TEST_EXECUTION_SUMMARY: ${{ github.event.client_payload.summary }}
+          APP_NAME: ${{ github.event.client_payload.app_name }}
+          APP_VERSION: ${{ github.event.client_payload.app_version }}
+          REQUEST_ID: ${{ github.event.client_payload.request_id }}
           YAKU_API_TOKEN: ${{ secrets.YAKU_API_TOKEN }}
 
 
